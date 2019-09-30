@@ -1,6 +1,6 @@
 diff -Naur harfbuzz-2.6.1/.circleci/config.yml harfbuzz-2.6.1.new/.circleci/config.yml
 --- harfbuzz-2.6.1/.circleci/config.yml	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/.circleci/config.yml	2019-09-14 14:47:20.164738622 +0200
++++ harfbuzz-2.6.1.new/.circleci/config.yml	2019-09-30 15:31:56.193450900 +0200
 @@ -22,15 +22,16 @@
        - run: make -j4
        - run: make check || .ci/fail.sh
@@ -30,9 +30,39 @@ diff -Naur harfbuzz-2.6.1/.circleci/config.yml harfbuzz-2.6.1.new/.circleci/conf
  
        # both autotools and cmake
        - distcheck
+diff -Naur harfbuzz-2.6.1/CMakeLists.txt harfbuzz-2.6.1.new/CMakeLists.txt
+--- harfbuzz-2.6.1/CMakeLists.txt	2019-08-23 00:52:24.000000000 +0200
++++ harfbuzz-2.6.1.new/CMakeLists.txt	2019-09-30 15:34:27.473293700 +0200
+@@ -258,19 +258,19 @@
+   add_definitions(-DHAVE_ICU)
+ 
+   # https://github.com/WebKit/webkit/blob/master/Source/cmake/FindICU.cmake
+-  find_package(PkgConfig)
+-  pkg_check_modules(PC_ICU QUIET icu-uc)
++  # find_package(PkgConfig)
++  # pkg_check_modules(PC_ICU QUIET icu-uc)
+ 
+-  find_path(ICU_INCLUDE_DIR NAMES unicode/utypes.h HINTS ${PC_ICU_INCLUDE_DIRS} ${PC_ICU_INCLUDEDIR})
+-  find_library(ICU_LIBRARY NAMES libicuuc cygicuuc cygicuuc32 icuuc HINTS ${PC_ICU_LIBRARY_DIRS} ${PC_ICU_LIBDIR})
++  # find_path(ICU_INCLUDE_DIR NAMES unicode/utypes.h HINTS ${PC_ICU_INCLUDE_DIRS} ${PC_ICU_INCLUDEDIR})
++  # find_library(ICU_LIBRARY NAMES libicuuc cygicuuc cygicuuc32 icuuc HINTS ${PC_ICU_LIBRARY_DIRS} ${PC_ICU_LIBDIR})
+ 
+-  include_directories(${ICU_INCLUDE_DIR})
++  include_directories(${CONAN_INCLUDE_DIRS_ICU})
+ 
+   list(APPEND project_headers ${PROJECT_SOURCE_DIR}/src/hb-icu.h)
+ 
+-  list(APPEND THIRD_PARTY_LIBS ${ICU_LIBRARY})
++  list(APPEND THIRD_PARTY_LIBS ${CONAN_LIBS_ICU})
+ 
+-  mark_as_advanced(ICU_INCLUDE_DIR ICU_LIBRARY)
++  # mark_as_advanced(ICU_INCLUDE_DIR ICU_LIBRARY)
+ endif ()
+ 
+ if (APPLE AND HB_HAVE_CORETEXT)
 diff -Naur harfbuzz-2.6.1/src/hb-aat-fdsc-table.hh harfbuzz-2.6.1.new/src/hb-aat-fdsc-table.hh
 --- harfbuzz-2.6.1/src/hb-aat-fdsc-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-fdsc-table.hh	2019-09-12 12:00:03.540210643 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-fdsc-table.hh	2019-09-30 15:31:56.197764300 +0200
 @@ -65,7 +65,7 @@
    protected:
    Tag		tag;		/* The 4-byte table tag name. */
@@ -53,7 +83,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-fdsc-table.hh harfbuzz-2.6.1.new/src/hb-aat
  		descriptors;	/* List of tagged-coordinate pairs style descriptors
 diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-bsln-table.hh harfbuzz-2.6.1.new/src/hb-aat-layout-bsln-table.hh
 --- harfbuzz-2.6.1/src/hb-aat-layout-bsln-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-layout-bsln-table.hh	2019-09-14 14:47:20.146738537 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-layout-bsln-table.hh	2019-09-30 15:31:56.200235900 +0200
 @@ -82,7 +82,7 @@
    }
  
@@ -74,7 +104,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-bsln-table.hh harfbuzz-2.6.1.new/src
  		lookupTable;	/* Lookup table that maps glyphs to their
 diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-common.hh harfbuzz-2.6.1.new/src/hb-aat-layout-common.hh
 --- harfbuzz-2.6.1/src/hb-aat-layout-common.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-layout-common.hh	2019-09-14 14:47:20.147738542 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-layout-common.hh	2019-09-30 15:31:56.204292500 +0200
 @@ -93,8 +93,8 @@
      return_trace (c->check_struct (this) && value.sanitize (c, base));
    }
@@ -135,7 +165,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-common.hh harfbuzz-2.6.1.new/src/hb-
    public:
 diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-just-table.hh harfbuzz-2.6.1.new/src/hb-aat-layout-just-table.hh
 --- harfbuzz-2.6.1/src/hb-aat-layout-just-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-layout-just-table.hh	2019-09-14 14:47:20.147738542 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-layout-just-table.hh	2019-09-30 15:31:56.207861900 +0200
 @@ -70,9 +70,9 @@
  
    ActionSubrecordHeader
@@ -222,7 +252,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-just-table.hh harfbuzz-2.6.1.new/src
  				 * bottom side. */
 diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-kerx-table.hh harfbuzz-2.6.1.new/src/hb-aat-layout-kerx-table.hh
 --- harfbuzz-2.6.1/src/hb-aat-layout-kerx-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-layout-kerx-table.hh	2019-09-14 14:47:20.148738547 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-layout-kerx-table.hh	2019-09-30 15:31:56.211644800 +0200
 @@ -82,8 +82,8 @@
    }
  
@@ -236,7 +266,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-kerx-table.hh harfbuzz-2.6.1.new/src
    DEFINE_SIZE_STATIC (6);
 diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-morx-table.hh harfbuzz-2.6.1.new/src/hb-aat-layout-morx-table.hh
 --- harfbuzz-2.6.1/src/hb-aat-layout-morx-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-layout-morx-table.hh	2019-09-14 14:47:20.148738547 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-layout-morx-table.hh	2019-09-30 15:31:56.214638600 +0200
 @@ -240,21 +240,21 @@
        if (buffer->idx == buffer->len && !mark_set)
          return;
@@ -380,7 +410,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-morx-table.hh harfbuzz-2.6.1.new/src
    public:
 diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-trak-table.hh harfbuzz-2.6.1.new/src/hb-aat-layout-trak-table.hh
 --- harfbuzz-2.6.1/src/hb-aat-layout-trak-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-aat-layout-trak-table.hh	2019-09-12 12:00:03.541210648 +0200
++++ harfbuzz-2.6.1.new/src/hb-aat-layout-trak-table.hh	2019-09-30 15:31:56.217652700 +0200
 @@ -62,7 +62,7 @@
    }
  
@@ -419,7 +449,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-aat-layout-trak-table.hh harfbuzz-2.6.1.new/src
    UnsizedArrayOf<TrackTableEntry>
 diff -Naur harfbuzz-2.6.1/src/hb-coretext.cc harfbuzz-2.6.1.new/src/hb-coretext.cc
 --- harfbuzz-2.6.1/src/hb-coretext.cc	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-coretext.cc	2019-09-14 14:47:20.163738617 +0200
++++ harfbuzz-2.6.1.new/src/hb-coretext.cc	2019-09-30 15:31:56.221619900 +0200
 @@ -302,7 +302,7 @@
    if (unlikely (!face_data)) return nullptr;
    CGFontRef cg_font = (CGFontRef) (const void *) face->data.coretext;
@@ -440,7 +470,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-coretext.cc harfbuzz-2.6.1.new/src/hb-coretext.
       * Note that evaluating condition above can be dangerous if another thread
 diff -Naur harfbuzz-2.6.1/src/hb-open-type.hh harfbuzz-2.6.1.new/src/hb-open-type.hh
 --- harfbuzz-2.6.1/src/hb-open-type.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-open-type.hh	2019-09-14 14:47:20.149738551 +0200
++++ harfbuzz-2.6.1.new/src/hb-open-type.hh	2019-09-30 15:31:56.224611700 +0200
 @@ -116,9 +116,9 @@
  };
  
@@ -467,7 +497,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-open-type.hh harfbuzz-2.6.1.new/src/hb-open-typ
  /* Script/language-system/feature index */
 diff -Naur harfbuzz-2.6.1/src/hb-ot-cmap-table.hh harfbuzz-2.6.1.new/src/hb-ot-cmap-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-cmap-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-cmap-table.hh	2019-09-14 14:47:20.149738551 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-cmap-table.hh	2019-09-30 15:31:56.228601400 +0200
 @@ -498,7 +498,7 @@
    UINT		length;		/* Byte length of this subtable. */
    UINT		language;	/* Ignore. */
@@ -488,7 +518,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-cmap-table.hh harfbuzz-2.6.1.new/src/hb-ot-c
  };
 diff -Naur harfbuzz-2.6.1/src/hb-ot-color-cbdt-table.hh harfbuzz-2.6.1.new/src/hb-ot-color-cbdt-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-color-cbdt-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-color-cbdt-table.hh	2019-09-14 14:47:20.150738556 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-color-cbdt-table.hh	2019-09-30 15:31:56.231593400 +0200
 @@ -226,8 +226,8 @@
  						   offset, length, format);
    }
@@ -513,7 +543,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-color-cbdt-table.hh harfbuzz-2.6.1.new/src/h
    HBUINT8		bitDepth;
 diff -Naur harfbuzz-2.6.1/src/hb-ot-color-colr-table.hh harfbuzz-2.6.1.new/src/hb-ot-color-colr-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-color-colr-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-color-colr-table.hh	2019-09-14 14:47:20.150738556 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-color-colr-table.hh	2019-09-30 15:31:56.234585100 +0200
 @@ -48,7 +48,7 @@
    }
  
@@ -534,7 +564,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-color-colr-table.hh harfbuzz-2.6.1.new/src/h
  				 * layer record. There will be
 diff -Naur harfbuzz-2.6.1/src/hb-ot-glyf-table.hh harfbuzz-2.6.1.new/src/hb-ot-glyf-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-glyf-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-glyf-table.hh	2019-09-14 14:47:20.151738561 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-glyf-table.hh	2019-09-30 15:31:56.238620100 +0200
 @@ -296,7 +296,7 @@
      };
  
@@ -546,7 +576,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-glyf-table.hh harfbuzz-2.6.1.new/src/hb-ot-g
      {
 diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-base-table.hh harfbuzz-2.6.1.new/src/hb-ot-layout-base-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-layout-base-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-layout-base-table.hh	2019-09-14 14:47:20.151738561 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-layout-base-table.hh	2019-09-30 15:31:56.241675400 +0200
 @@ -73,7 +73,7 @@
    protected:
    HBUINT16	format;		/* Format identifier--format = 2 */
@@ -558,7 +588,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-base-table.hh harfbuzz-2.6.1.new/src/
    public:
 diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-common.hh harfbuzz-2.6.1.new/src/hb-ot-layout-common.hh
 --- harfbuzz-2.6.1/src/hb-ot-layout-common.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-layout-common.hh	2019-09-14 14:47:20.152738565 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-layout-common.hh	2019-09-30 15:31:56.244670100 +0200
 @@ -172,8 +172,8 @@
    bool add_coverage (set_t *glyphs) const
    { return glyphs->add_range (start, end); }
@@ -653,7 +683,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-common.hh harfbuzz-2.6.1.new/src/hb-o
  
 diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-gpos-table.hh harfbuzz-2.6.1.new/src/hb-ot-layout-gpos-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-layout-gpos-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-layout-gpos-table.hh	2019-09-14 14:47:20.153738570 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-layout-gpos-table.hh	2019-09-30 15:31:56.248684700 +0200
 @@ -758,7 +758,7 @@
    friend struct PairSet;
  
@@ -665,7 +695,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-gpos-table.hh harfbuzz-2.6.1.new/src/
    ValueRecord	values;			/* Positioning data for the first glyph
 diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-gsub-table.hh harfbuzz-2.6.1.new/src/hb-ot-layout-gsub-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-layout-gsub-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-layout-gsub-table.hh	2019-09-14 15:27:32.326906872 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-layout-gsub-table.hh	2019-09-30 15:31:56.251651100 +0200
 @@ -208,7 +208,7 @@
      auto it =
      + hb_zip (this+coverage, substitute)
@@ -909,7 +939,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-gsub-table.hh harfbuzz-2.6.1.new/src/
      if (unlikely (!Lookup::serialize (c, SubTable::Ligature, lookup_props, 1))) return_trace (false);
 diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-jstf-table.hh harfbuzz-2.6.1.new/src/hb-ot-layout-jstf-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-layout-jstf-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-layout-jstf-table.hh	2019-09-14 14:47:20.154738575 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-layout-jstf-table.hh	2019-09-30 15:31:56.254642200 +0200
 @@ -136,7 +136,7 @@
   * ExtenderGlyphs -- Extender Glyph Table
   */
@@ -921,7 +951,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-layout-jstf-table.hh harfbuzz-2.6.1.new/src/
  /*
 diff -Naur harfbuzz-2.6.1/src/hb-ot-math-table.hh harfbuzz-2.6.1.new/src/hb-ot-math-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-math-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-math-table.hh	2019-09-14 14:47:20.155738580 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-math-table.hh	2019-09-30 15:31:56.257660300 +0200
 @@ -423,7 +423,7 @@
    }
  
@@ -942,7 +972,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-math-table.hh harfbuzz-2.6.1.new/src/hb-ot-m
  				   * the beginning of the glyph, in the
 diff -Naur harfbuzz-2.6.1/src/hb-ot-name-table.hh harfbuzz-2.6.1.new/src/hb-ot-name-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-name-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-name-table.hh	2019-09-14 14:47:20.156738584 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-name-table.hh	2019-09-30 15:31:56.261624400 +0200
 @@ -330,6 +330,9 @@
    DEFINE_SIZE_ARRAY (6, nameRecordZ);
  };
@@ -955,7 +985,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-name-table.hh harfbuzz-2.6.1.new/src/hb-ot-n
  } /* namespace OT */
 diff -Naur harfbuzz-2.6.1/src/hb-ot-post-table.hh harfbuzz-2.6.1.new/src/hb-ot-post-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-post-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-post-table.hh	2019-09-12 12:00:03.542210653 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-post-table.hh	2019-09-30 15:31:56.265613300 +0200
 @@ -262,7 +262,7 @@
  					 * 0x00020000 for version 2.0
  					 * 0x00025000 for version 2.5 (deprecated)
@@ -967,7 +997,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-post-table.hh harfbuzz-2.6.1.new/src/hb-ot-p
  					 * (forward). */
 diff -Naur harfbuzz-2.6.1/src/hb-ot-shape-complex-arabic-fallback.hh harfbuzz-2.6.1.new/src/hb-ot-shape-complex-arabic-fallback.hh
 --- harfbuzz-2.6.1/src/hb-ot-shape-complex-arabic-fallback.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-shape-complex-arabic-fallback.hh	2019-09-14 14:47:20.155738580 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-shape-complex-arabic-fallback.hh	2019-09-30 15:31:56.272615400 +0200
 @@ -49,8 +49,8 @@
  					  hb_font_t *font,
  					  unsigned int feature_index)
@@ -1018,7 +1048,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-shape-complex-arabic-fallback.hh harfbuzz-2.
    /* Now that the first-glyphs are sorted, walk again, populate ligatures. */
 diff -Naur harfbuzz-2.6.1/src/hb-ot-stat-table.hh harfbuzz-2.6.1.new/src/hb-ot-stat-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-stat-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-stat-table.hh	2019-09-12 12:00:03.542210653 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-stat-table.hh	2019-09-30 15:31:56.276384000 +0200
 @@ -77,7 +77,7 @@
    NameID	valueNameID;	/* The name ID for entries in the 'name' table
  				 * that provide a display string for this
@@ -1064,7 +1094,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-stat-table.hh harfbuzz-2.6.1.new/src/hb-ot-s
  };
 diff -Naur harfbuzz-2.6.1/src/hb-ot-var-fvar-table.hh harfbuzz-2.6.1.new/src/hb-ot-var-fvar-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-var-fvar-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-var-fvar-table.hh	2019-09-12 12:00:03.543210657 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-var-fvar-table.hh	2019-09-30 15:31:56.285789200 +0200
 @@ -44,7 +44,7 @@
  {
    friend struct fvar;
@@ -1118,7 +1148,7 @@ diff -Naur harfbuzz-2.6.1/src/hb-ot-var-fvar-table.hh harfbuzz-2.6.1.new/src/hb-
    DEFINE_SIZE_STATIC (16);
 diff -Naur harfbuzz-2.6.1/src/hb-ot-vorg-table.hh harfbuzz-2.6.1.new/src/hb-ot-vorg-table.hh
 --- harfbuzz-2.6.1/src/hb-ot-vorg-table.hh	2019-08-23 00:52:24.000000000 +0200
-+++ harfbuzz-2.6.1.new/src/hb-ot-vorg-table.hh	2019-09-14 14:47:20.156738584 +0200
++++ harfbuzz-2.6.1.new/src/hb-ot-vorg-table.hh	2019-09-30 15:31:56.292624900 +0200
 @@ -48,7 +48,7 @@
    }
  
