@@ -88,6 +88,10 @@ class HarfbuzzConan(ConanFile):
         cmake.definitions["HB_BUILD_TESTS"] = False
         cmake.definitions["HB_HAVE_ICU"] = self.options.with_icu
         cmake.definitions["HB_HAVE_GLIB"] = self.options.with_glib
+        
+        if self.settings.os == "Windows":
+            cmake.definitions["HB_HAVE_GDI"] = self.options.with_gdi
+            cmake.definitions["HB_HAVE_UNISCRIBE"] = self.options.with_uniscribe
 
         if self.options.with_icu:
             cmake.definitions["CMAKE_CXX_STANDARD"] = "17"
