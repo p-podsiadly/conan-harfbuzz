@@ -12,6 +12,7 @@ endif()
 
 if(WIN32)
     add_definitions(-DTEST_GDI)
+    add_definitions(-DTEST_UNISCRIBE)
 endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/example.ttf
@@ -26,3 +27,6 @@ target_link_libraries("${CMAKE_PROJECT_NAME}_icu" ${CONAN_LIBS})
 
 add_executable("${CMAKE_PROJECT_NAME}_gdi" test_gdi.c)
 target_link_libraries("${CMAKE_PROJECT_NAME}_gdi" ${CONAN_LIBS})
+
+add_executable("${CMAKE_PROJECT_NAME}_uniscribe" test_uniscribe.c)
+target_link_libraries("${CMAKE_PROJECT_NAME}_uniscribe" ${CONAN_LIBS})

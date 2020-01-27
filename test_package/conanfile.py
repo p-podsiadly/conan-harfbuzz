@@ -18,3 +18,4 @@ class TestPackageConan(ConanFile):
             self._run_test("test_package")
             self._run_test("test_package_icu")
             self._run_test("test_package_gdi")
+            self._run_test("test_package_uniscribe")
