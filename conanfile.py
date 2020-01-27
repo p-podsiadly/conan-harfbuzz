@@ -36,6 +36,7 @@ class HarfbuzzConan(ConanFile):
     }
 
     _source_subfolder = "source_subfolder"
+    _build_subfolder = "build_subfolder"
 
     def requirements(self):
         if self.options.with_freetype:
@@ -88,7 +89,7 @@ class HarfbuzzConan(ConanFile):
             cmake.definitions["HB_HAVE_GDI"] = self.options.with_gdi
             cmake.definitions["HB_HAVE_UNISCRIBE"] = self.options.with_uniscribe
 
-        cmake.configure()
+        cmake.configure(build_folder=self._build_subfolder)
         return cmake
 
     def build(self):
