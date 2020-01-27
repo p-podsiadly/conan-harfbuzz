@@ -4,13 +4,13 @@ import os
 
 class HarfbuzzConan(ConanFile):
     name = "harfbuzz"
-    version = "2.6.2"
+    version = "2.6.4"
     description = "HarfBuzz is an OpenType text shaping engine."
     topics = ("conan", "harfbuzz", "opentype", "text", "engine")
     url = "http://github.com/bincrafters/conan-harfbuzz"
     homepage = "http://harfbuzz.org"
     license = "MIT"
-    exports = ["FindHarfBuzz.cmake", "LICENSE.md"]
+    exports = ["conandata.yml", "FindHarfBuzz.cmake", "LICENSE.md"]
     exports_sources = ["CMakeLists.txt", "source_subfolder.patch"]
     generators = "cmake"
     short_paths = True
@@ -36,13 +36,12 @@ class HarfbuzzConan(ConanFile):
     }
 
     _source_subfolder = "source_subfolder"
-    _build_subfolder = "build_subfolder"
 
     def requirements(self):
         if self.options.with_freetype:
-            self.requires.add("freetype/2.10.0")
+            self.requires.add("freetype/2.10.1")
         if self.options.with_icu:
-            self.requires.add("icu/64.2@bincrafters/stable")
+            self.requires.add("icu/64.2")
         if self.options.with_glib:
             self.requires.add("glib/2.58.3@bincrafters/stable")
 
@@ -58,12 +57,8 @@ class HarfbuzzConan(ConanFile):
             del self.options.with_uniscribe
 
     def source(self):
-        source_url = "https://github.com/harfbuzz/harfbuzz"
-        sha256 = "56a9bc6470751ae0fd8aa1912721c1596cf15900183dca9a3e10501422bab2b9"
-        tools.get("{0}/archive/{1}.tar.gz".format(source_url, self.version), sha256=sha256)
-        extracted_dir = self.name + "-" + self.version
-        os.rename(extracted_dir, self._source_subfolder)
-        tools.patch(patch_file="source_subfolder.patch")
+        tools.get(**self.conan_data["sources"][self.version])
+        os.rename(self.name + "-" + self.version, self._source_subfolder)
 
     def _configure_cmake_compiler_flags(self, cmake):
         flags = []
@@ -93,10 +88,7 @@ class HarfbuzzConan(ConanFile):
             cmake.definitions["HB_HAVE_GDI"] = self.options.with_gdi
             cmake.definitions["HB_HAVE_UNISCRIBE"] = self.options.with_uniscribe
 
-        if self.options.with_icu:
-            cmake.definitions["CMAKE_CXX_STANDARD"] = "17"
-
-        cmake.configure(build_folder=self._build_subfolder)
+        cmake.configure()
         return cmake
 
     def build(self):
