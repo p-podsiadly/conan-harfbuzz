@@ -9,8 +9,5 @@ if __name__ == "__main__":
     builder = build_template_default.get_builder()
     builder.run()
 
-    builder = build_template_default.get_builder(options=["with_glib=True"])
-    builder.run()
-
-    builder = build_template_default.get_builder(options=["with_icu=True"])
+    builder = build_template_default.get_builder(options=["harfbuzz:with_glib=True", "harfbuzz:with_icu=True"])
     builder.run()
