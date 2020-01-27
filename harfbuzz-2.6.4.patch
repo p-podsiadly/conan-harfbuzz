@@ -1,0 +1,9 @@
+diff --git a/harfbuzz-2.6.4/src/harfbuzz.cc b/source_subfolder/src/harfbuzz.cc
+index 251a065..59b9c79 100644
+--- a/harfbuzz-2.6.4/src/harfbuzz.cc
++++ b/source_subfolder/src/harfbuzz.cc
+@@ -51,3 +51,4 @@
+ #include "hb-gdi.cc"
+ #include "hb-directwrite.cc"
+ #include "hb-coretext.cc"
++#include "hb-icu.cc"

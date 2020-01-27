@@ -10,7 +10,7 @@ class HarfbuzzConan(ConanFile):
     url = "http://github.com/bincrafters/conan-harfbuzz"
     homepage = "http://harfbuzz.org"
     license = "MIT"
-    exports = ["conandata.yml", "FindHarfBuzz.cmake", "LICENSE.md"]
+    exports = ["conandata.yml", "harfbuzz-*.patch", "FindHarfBuzz.cmake", "LICENSE.md"]
     exports_sources = ["CMakeLists.txt", "source_subfolder.patch"]
     generators = "cmake"
     short_paths = True
@@ -60,6 +60,11 @@ class HarfbuzzConan(ConanFile):
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
         os.rename(self.name + "-" + self.version, self._source_subfolder)
+
+        tools.patch(
+            base_path=self._source_subfolder,
+            patch_file=self.conan_data["patches"][self.version],
+            strip=1)
 
     def _configure_cmake_compiler_flags(self, cmake):
         flags = []
