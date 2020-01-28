@@ -94,6 +94,9 @@ class HarfbuzzConan(ConanFile):
             cmake.definitions["HB_HAVE_GDI"] = self.options.with_gdi
             cmake.definitions["HB_HAVE_UNISCRIBE"] = self.options.with_uniscribe
 
+        if self.with_icu:
+            cmake.definitions["CMAKE_CXX_STANDARD"] = "11"
+
         cmake.configure(build_folder=self._build_subfolder)
         return cmake
 
